@@ -4,31 +4,31 @@
 # https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
 
 trigger:
-- master
+- master # This means that as soon as I change anything and commit to the master (or main) branch, everything underneath will run.
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'windows-latest' #The computer in the cloud that is running this all.
 
 variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
-steps:
-- task: NuGetToolInstaller@1
+steps: # Steps have tasks. These are not tasks that I make up. If I need a task I look for one in the MS documentation and then I will find the correct one and user that one.
+- task: NuGetToolInstaller@1 # Float mouse over it see what it does.
 
 - task: NuGetCommand@2
   inputs:
     restoreSolution: '$(solution)'
 
-- task: VSBuild@1
+- task: VSBuild@1 #This part actually creates the builds.
   inputs:
     solution: '$(solution)'
     msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-- task: VSTest@2
+- task: VSTest@2 #This is where you can run tests
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
