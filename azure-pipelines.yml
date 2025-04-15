@@ -44,11 +44,13 @@ steps: # Steps have tasks. These are not tasks that I make up. If I need a task 
     downloadType: 'single'
     artifactName: 'drop'
     downloadPath: '$(System.ArtifactsDirectory)' # The download path bit of this task simply relates to a real directory on a server (the agent hosted by MS), or my own server (agent on Azure in this case).
+
 - task: AzureRmWebAppDeployment@5
   inputs:
     ConnectionType: 'AzureRM'
-    azureSubscription: 'My Azure Training(4b84325a-3468-4caa-bd84-7b2b5b78ab46)'
+    azureSubscription: 'MyServiceConnectionforWebApp'
     appType: 'webApp'
     WebAppName: 'webapp'
-    packageForLinux: '$(System.ArtifactsDirectory)/drop/*.zip'
+    packageForLinux: '$(System.ArtifactDirectory)/drop/*.zip'
+
 
