@@ -6,8 +6,7 @@
 trigger:
 - master # This means that as soon as I change anything and commit to the master (or main) branch, everything underneath will run.
 
-pool:
-  vmImage: 'windows-latest' #The computer in the cloud that is running this all.
+pool: 'OURPOOL' #The computer in the cloud that is running this all.
 
 variables:
   solution: '**/*.sln'
