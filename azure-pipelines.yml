@@ -51,6 +51,6 @@ steps: # Steps have tasks. These are not tasks that I make up. If I need a task 
     azureSubscription: 'MyServiceConnectionforWebApp'
     appType: 'webApp'
     WebAppName: 'webapp'
-    packageForLinux: '$(System.ArtifactDirectory)/drop/*.zip'
+    packageForLinux: '$(System.ArtifactsDirectory)/drop/*.zip'
 
 
