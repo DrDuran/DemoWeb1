@@ -1,56 +1,66 @@
 # ASP.NET
 # Build and test ASP.NET projects.
-# Add steps that publish symbols, save build artifacts, deploy, and more:
+# Add steps that publish symbols, save build artifacts, deploy, and more:d
 # https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
 
 trigger:
-- master # This means that as soon as I change anything and commit to the master (or main) branch, everything underneath will run.
+- master
+stages:
 
-pool: 'OURPOOL' #The computer in the cloud that is running this all.
+- stage: Build
+  jobs:
+  - job: Build
 
-variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+    pool: 'OURPOOL'
 
-steps: # Steps have tasks. These are not tasks that I make up. If I need a task I look for one in the MS documentation and then I will find the correct one and user that one.
-- task: NuGetToolInstaller@1 # Float mouse over it see what it does.
+    variables:
+      solution: '**/*.sln'
+      buildPlatform: 'Any CPU'
+      buildConfiguration: 'Release'
 
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
+    steps:
+    - task: NuGetToolInstaller@1
 
-- task: VSBuild@1 #This part actually creates the builds.
-  inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    - task: NuGetCommand@2
+      inputs:
+        restoreSolution: '$(solution)'
 
-- task: VSTest@2 #This is where you can run tests
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    - task: VSBuild@1
+      inputs:
+        solution: '$(solution)'
+        msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
+    - task: VSTest@2
+      inputs:
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
 
-- task: DownloadBuildArtifacts@1
-  inputs:
-    buildType: 'current'
-    downloadType: 'single'
-    artifactName: 'drop'
-    downloadPath: '$(System.ArtifactsDirectory)' # The download path bit of this task simply relates to a real directory on a server (the agent hosted by MS), or my own server (agent on Azure in this case).
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
 
-- task: AzureRmWebAppDeployment@5
-  inputs:
-    ConnectionType: 'AzureRM'
-    azureSubscription: 'MyServiceConnectionforWebApp'
-    appType: 'webApp'
-    WebAppName: 'webapp'
-    packageForLinux: '$(System.ArtifactsDirectory)/drop/*.zip'
+- stage: Deploy
+  jobs:
+  - job: Deploy
 
+    pool: 'OURPOOL'
 
+    steps:
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'drop'
+        downloadPath: '$(System.ArtifactsDirectory)'
+
+    - task: AzureRmWebAppDeployment@4
+      inputs:
+        ConnectionType: 'AzureRM'
+        azureSubscription: 'MyServiceConnectionforWebApp'
+        appType: 'webApp'
+        WebAppName: 'WebApp'
+        packageForLinux: '$(System.ArtifactsDirectory)/drop/*.zip'
