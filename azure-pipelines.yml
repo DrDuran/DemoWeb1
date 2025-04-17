@@ -12,7 +12,7 @@ stages:
   - job: Build
 
     pool:
-      vmImage: 'OUTPOOL'
+      vmImage: 'OURPOOL'
 
     variables:
       solution: '**/*.sln'
