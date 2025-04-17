@@ -30,6 +30,11 @@
             <asp:Label ID="Label2" runat="server"></asp:Label>
             <br />
             <br />
+            <asp:Button ID="Button4" runat="server" Text="New Button" />
+            <br />
+            <br />
+            <asp:Label ID="Label3" runat="server"></asp:Label>
+            <br />
             <br />
         </div>
     </form>
